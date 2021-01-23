@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="member">
+
+	<select id="selectMember" resultType="memberVo" parameterType="String">
+		SELECT * FROM users WHERE userid = #{value}
+	</select>
+	
+	<select id="selectAllCnt" resultType="int">
+		SELECT COUNT(*) FROM users
+	</select>
+	
+	<select id="selectPagingMember" resultType="memberVo" parameterType="pageVo">
+		SELECT *
+		FROM
+		    (SELECT ROWNUM rn, a.*
+		     FROM (SELECT * FROM users ORDER BY userid) a
+		     WHERE ROWNUM &lt;= #{page} * #{pageSize})
+		WHERE rn BETWEEN (#{page} -1)* #{pageSize} + 1 AND #{page} * #{pageSize}
+	</select>
+	
+	<insert id="memberRegist" parameterType="memberVo">
+		INSERT INTO users (userid, usernm, pass, reg_dt, alias, addr1, addr2, zipcode, filename, realfilename) 
+		VALUES (#{userid} , #{usernm}, #{pass}, #{reg_dt}, #{alias}, #{addr1} , #{addr2}, #{zipcode}, #{filename}, #{realfilename})
+	</insert>
+	
+	<update id="memberUpdate" parameterType="memberVo">
+		UPDATE users SET usernm = #{usernm}, pass = #{pass}, 
+						 alias = #{alias}, addr1 = #{addr1}, 
+						 addr2 = #{addr2}, zipcode = #{zipcode},
+						 filename = #{filename}, realfilename= #{realfilename}
+		WHERE userid = #{userid}
+	</update>
+	
+	<delete id="memberDelete" parameterType="String">
+		DELETE FROM users WHERE userid = #{value}
+	</delete>
+	
+	<select id="searchMemberid" resultType="memberVo" parameterType="pageVo_S">
+		SELECT *
+		FROM
+		    (SELECT ROWNUM rn, a.*
+		     FROM (SELECT * FROM users WHERE userid LIKE '%'||#{s_value} ||'%' ORDER BY userid) a
+		     WHERE ROWNUM &lt;= #{page} * #{pageSize})
+		WHERE rn BETWEEN (#{page} -1)* #{pageSize} + 1 AND #{page} * #{pageSize}
+	</select>
+	
+	<select id="searchMemberidCnt" resultType="int" parameterType="String">
+		SELECT COUNT(*) FROM users WHERE userid LIKE '%'||#{value} ||'%'
+	</select>
+	
+	<select id="searchMembernm" resultType="memberVo" parameterType="pageVo_S">
+		SELECT *
+		FROM
+		    (SELECT ROWNUM rn, a.*
+		     FROM (SELECT * FROM users WHERE usernm LIKE '%'||#{s_value} ||'%' ORDER BY userid) a
+		     WHERE ROWNUM &lt;= #{page} * #{pageSize})
+		WHERE rn BETWEEN (#{page} -1)* #{pageSize} + 1 AND #{page} * #{pageSize}
+	</select>
+	<select id="searchMembernmCnt" resultType="int" parameterType="String">
+		SELECT COUNT(*) FROM users WHERE usernm LIKE '%'||#{value}||'%'
+	</select>
+	
+	<select id="searchMemberalias" resultType="memberVo" parameterType="pageVo_S">
+		SELECT *
+		FROM
+		    (SELECT ROWNUM rn, a.*
+		     FROM (SELECT * FROM users WHERE alias LIKE '%'||#{s_value} ||'%' ORDER BY userid) a
+		     WHERE ROWNUM &lt;= #{page} * #{pageSize})
+		WHERE rn BETWEEN (#{page} -1)* #{pageSize} + 1 AND #{page} * #{pageSize}
+	</select>
+	<select id="searchMemberaliasCnt" resultType="int" parameterType="String">
+		SELECT COUNT(*) FROM users WHERE alias LIKE '%'||#{value}||'%'
+	</select>
+</mapper>
